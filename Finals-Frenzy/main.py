@@ -5,6 +5,7 @@ from FallingObject import FallingObject
 from GameState import GameState
 from Player import Player
 from Draw import Draw
+from Menu import Menu
 
 
 def main():
@@ -16,6 +17,21 @@ def main():
     game_state = GameState()
     dg = Draw()
     falling_objects = pygame.sprite.Group()
+
+    menu = Menu(screen)
+    running = True
+    while running:
+        for event in pygame.event.get():
+            action = menu.handle_event(event)
+            if action == 'quit':
+                pygame.quit()
+                return
+            if action == 'play':
+                running = False
+                break
+        menu.draw()
+        pygame.display.flip()
+        clock.tick(60)
 
     while game_state.running:
         for event in pygame.event.get():
