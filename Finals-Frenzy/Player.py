@@ -3,10 +3,11 @@ import pygame
 class Player(pygame.sprite.Sprite):
     def __init__(self, x, y):
         super().__init__()
-        #self.image = pygame.Surface((30, 30))}
-        original_image = pygame.image.load('img/player.png')
-        self.image = pygame.transform.scale(original_image, (80, 60))
-        #self.image.fill((0, 0, 255))
+        franklin_d = pygame.image.load('img/player/franklin_derecha.png')
+        franklin_i = pygame.image.load('img/player/franklin_izquierda.png')
+        self.image_caminando_derecha = pygame.transform.scale(franklin_d, (50, 90))
+        self.image_caminando_izquierda = pygame.transform.scale(franklin_i, (50, 90))
+        self.image = self.image_caminando_derecha
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
@@ -18,8 +19,10 @@ class Player(pygame.sprite.Sprite):
         keys = pygame.key.get_pressed()
         if keys[pygame.K_LEFT]:
             self.rect.x -= self.speed
+            self.image = self.image_caminando_izquierda
         if keys[pygame.K_RIGHT]:
             self.rect.x += self.speed
+            self.image = self.image_caminando_derecha
 
     def draw(self, screen):
         screen.blit(self.image, self.rect)

@@ -14,11 +14,11 @@ El juego trata sobre un estudiante universitario llamado Franklin que está insc
 1. Personaje principal:
     - Franklin: Es un típico estudiante de UNI que siempre está luchando por mantener el equilibrio entre sus estudios y su vida social. Es inteligente pero se confía o falta en los primeros exámenes, por lo que todo el peso recae en los últimos exámenes pues solo trabaja bajo presión.
 2. Objetos de estudio.:
-    - Libros: Este objeto ayudan a aumentar la puntuación y asi tener mas probabilidades de pasar esos tediosos examenes
-    - CharGPT
+    - Libros: Este objeto ayudan a aumentar la puntuación y así tener mas probabilidades de pasar esos tediosos exámenes
+    - ChatGPT: Este es una herramienta de inteligencia artificial que ayuda a Franklin a estudiar de manera más eficiente.
 3. Objetos de soporte:
-    - Café: Este suministro te da energía por lo que despues de consumirlo el estudiante recibe una cierta velocidad
-    - Energizante:
+    - Café: Este suministro te da energía por lo que después de consumirlo el estudiante recibe una cierta velocidad.
+    - Energizante: Este objeto proporciona a Franklin un impulso temporal de energía, lo que le permite recoger objetos a un ritmo más rápido por un tiempo limitado.
 4. Objetos de trampa:
     - Tiktok: Otro obstáculo distractor que, cuando Franklin interactúa con él, disminuye su tiempo de estudio y vida.
     - Valorant: Este juego es una trampa que consume gran parte del tiempo de estudio de Franklin, reduciendo su vida.
@@ -65,7 +65,7 @@ Vamos a crear primero un juego simple pero funcional, y luego poco a poco agrega
 
 1. Creamos la clase `FallingObject`
     
-    ```java
+    ```python
     import pygame
     
     class FallingObject(pygame.sprite.Sprite):
@@ -104,7 +104,7 @@ Vamos a crear primero un juego simple pero funcional, y luego poco a poco agrega
     
 2. Creamos la clase `GameState`:
     
-    ```java
+    ```python
     class GameState:
         def __init__(self):
             self.score = 0
@@ -143,7 +143,7 @@ Vamos a crear primero un juego simple pero funcional, y luego poco a poco agrega
     
 3. Creamos la clase `Draw`:
     
-    ```java
+    ```python
     import pygame
     
     class Draw:
@@ -174,7 +174,7 @@ Vamos a crear primero un juego simple pero funcional, y luego poco a poco agrega
     
 4. Creamos la clase `Player`:
     
-    ```java
+    ```python
     import pygame
     
     class Player(pygame.sprite.Sprite):
@@ -214,7 +214,7 @@ Salida del juego:
 
 Podemos hacer pequeños ajustes al juego. Por ejemplo, en lugar de mostrar la energía como un número, podemos representarla como una barra. Esto se puede hacer de la siguiente manera en la clase Draw:
 
-```java
+```python
 import pygame
 
 class Draw:
@@ -268,7 +268,7 @@ Salida:
 
 ## Añadiendo un Menu del juego
 
-```java
+```python
 import pygame
 
 class Menu:
@@ -309,7 +309,7 @@ La clase `Menu` crea e implementa el menú del juego. En el método `__init__`, 
 
 Luego actualizamos nuestra clase main:
 
-```java
+```python
 import random
 import pygame
 
@@ -381,7 +381,7 @@ El Menu del juego se veria de la siguiente manera:
 
 Para añadir un menu por nivel creamos la clase Win:
 
-```java
+```python
 import pygame
 
 class WinScreen:
@@ -549,3 +549,54 @@ En el método `__init__`, se establecen la pantalla, las fuentes de los textos y
 En el bucle de juego principal, añadimos un condicional para comprobar si el juego ha terminado y si el jugador no ha ganado con `not game_state.running and not game_state.win`. Si es asi, se crea la pantalla de Game Over y se inicia un nuevo bucle while. En este bucle, se manejan los eventos de pulsar el botón de reintentar y la tecla de salida. Si se pulsa el botón de reintentar, se reinicia el estado del juego, se vacía el grupo de objetos que caen, se recrea el jugador y se sale del bucle. Por último, se dibuja la pantalla de Game Over y se actualiza la pantalla del juego.
 
 ![Untitled](Finals%20Frenzy%20Christmas%20Edition%20ddb529c67b5c46d0b6630f1bf225600e/Untitled%207.png)
+
+# Agregando pixel art al juego
+
+Hasta ahora, nuestro juego se basa en formas y colores simples. Pero podemos hacerlo más atractivo visualmente agregando arte en píxeles. Para realizar esta tarea, necesitaremos imágenes en píxeles para reemplazar los rectángulos de colores que representan a Franklin, los objetos que caen y el fondo del juego. También podemos agregar música y efectos de sonido para mejorar la experiencia del juego.
+
+## Embelleciendo el Menú del juego
+
+Para embellecer el menú del juego, podemos agregar una imagen de fondo y cambiar la fuente y el color de los botones. También podemos agregar una animación simple, como un parpadeo, para atraer la atención hacia los botones de 'Jugar' y 'Salir'. Además, podríamos colocar en la parte superior del menú el título del juego con una fuente grande y llamativa.
+
+## Jugador
+
+Franklin lo representaremos como un estudiante con prendas simples, una mochila y lentes azules con cabello negro, tenemos dos imagenes: franklin_derecha.png y franklin_izquierda.png, entonces actualizamos nuestra clase Player
+
+```python
+import pygame
+
+class Player(pygame.sprite.Sprite):
+    def __init__(self, x, y):
+        super().__init__()
+        franklin_d = pygame.image.load('img/player/franklin_derecha.png')
+        franklin_i = pygame.image.load('img/player/franklin_izquierda.png')
+        self.image_caminando_derecha = pygame.transform.scale(franklin_d, (50, 90))
+        self.image_caminando_izquierda = pygame.transform.scale(franklin_i, (50, 90))
+        self.image = self.image_caminando_derecha
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+        self.rect.center = (x, y)
+        self.speed = 6
+        self.energy = 100
+
+    def update(self):
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_LEFT]:
+            self.rect.x -= self.speed
+            self.image = self.image_caminando_izquierda
+        if keys[pygame.K_RIGHT]:
+            self.rect.x += self.speed
+            self.image = self.image_caminando_derecha
+
+    def draw(self, screen):
+        screen.blit(self.image, self.rect)
+```
+
+Explicación:
+
+En la clase `Player`, cargamos las imágenes de Franklin caminando a la derecha e izquierda. Estas imágenes se escalan para tener un tamaño de 50x90 píxeles. A continuación, establecemos la imagen inicial de Franklin como la de él caminando a la derecha. En el método `update`, cambiamos la imagen de Franklin dependiendo de la dirección en la que se está moviendo. Por último, en el método `draw`, dibujamos la imagen de Franklin en la pantalla.
+
+![Untitled](Finals%20Frenzy%20Christmas%20Edition%20ddb529c67b5c46d0b6630f1bf225600e/Untitled%208.png)
+
+![Untitled](Finals%20Frenzy%20Christmas%20Edition%20ddb529c67b5c46d0b6630f1bf225600e/Untitled%209.png)

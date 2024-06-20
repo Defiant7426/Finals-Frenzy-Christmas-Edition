@@ -13,7 +13,7 @@ def main():
     screen = pygame.display.set_mode((800, 600))
     clock = pygame.time.Clock()
 
-    player = Player(400, 500)
+    player = Player(400, 550)
     game_state = GameState()
     dg = Draw()
     falling_objects = pygame.sprite.Group()
