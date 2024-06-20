@@ -11,7 +11,7 @@ class Player(pygame.sprite.Sprite):
         self.rect.x = x
         self.rect.y = y
         self.rect.center = (x, y)
-        self.speed = 5
+        self.speed = 6
         self.energy = 100
 
     def update(self):

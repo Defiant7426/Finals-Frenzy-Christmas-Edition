@@ -210,6 +210,8 @@ Salida del juego:
 
 # Pequeños arreglos al juego
 
+## Añadiendo una barra para la energía
+
 Podemos hacer pequeños ajustes al juego. Por ejemplo, en lugar de mostrar la energía como un número, podemos representarla como una barra. Esto se puede hacer de la siguiente manera en la clase Draw:
 
 ```java
@@ -264,7 +266,7 @@ Salida:
 
 ![Untitled](Finals%20Frenzy%20Christmas%20Edition%20ddb529c67b5c46d0b6630f1bf225600e/Untitled%203.png)
 
-Ahora vamos a crear el Menu del juego, para ello vamos a crear la clase Menu:
+## Añadiendo un Menu del juego
 
 ```java
 import pygame
@@ -370,3 +372,180 @@ if __name__ == '__main__':
 Explicación:
 
 En la función `main`, primero se inicializa pygame y se crea la pantalla y el reloj del juego. Luego se crean las instancias de las clases `Player`, `GameState`, `Draw` y `Menu`, y se crea un grupo para los objetos que caen. En el primer bucle while, se controla el menú del juego: se manejan los eventos de pulsar los botones de jugar y salir, y se actualiza la pantalla. En el segundo bucle while, se maneja el juego en sí: se actualizan el jugador y los objetos que caen, se manejan las colisiones, se crean nuevos objetos que caen y se dibuja el juego en la pantalla. Finalmente, se cierra pygame cuando se termina el juego.
+
+El Menu del juego se veria de la siguiente manera:
+
+![Untitled](Finals%20Frenzy%20Christmas%20Edition%20ddb529c67b5c46d0b6630f1bf225600e/Untitled%204.png)
+
+## Añadiendo un Menu por cada nivel
+
+Para añadir un menu por nivel creamos la clase Win:
+
+```java
+import pygame
+
+class WinScreen:
+    def __init__(self, screen):
+        self.screen = screen
+        self.win_font = pygame.font.SysFont(None, 50)
+        self.button_font = pygame.font.SysFont(None, 30)
+        self.next_level_button = pygame.Rect(350, 350, 130, 50)
+
+    def draw(self):
+        self.screen.fill((174, 214, 241))
+
+        win_text = self.win_font.render("¡Ganaste!", True, (0, 0, 0))
+        self.screen.blit(win_text, (350, 250))
+
+        pygame.draw.rect(self.screen, (0,255,0), self.next_level_button)
+        next_level_text = self.button_font.render("Siguiente nivel", True, (0, 0, 0))
+        self.screen.blit(next_level_text, (self.next_level_button.x + 10, self.next_level_button.y + 10))
+
+    def handle_event(self, event):
+        if event.type == pygame.QUIT:
+            return 'quit'
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if self.next_level_button.collidepoint(event.pos):
+                return 'next_level'
+```
+
+Explicación:
+
+La clase `WinScreen` se encarga de crear y manejar la pantalla de victoria que se muestra cuando el jugador gana un nivel. En el método `__init__`, se establecen la pantalla, las fuentes de los textos y el rectángulo del botón de pasar al siguiente nivel. En el método `draw`, se dibujan en la pantalla el texto de victoria y el botón de siguiente nivel. En el método `handle_event`, se manejan los eventos de pulsar el botón de siguiente nivel y la tecla de retorno.
+
+Ahora solo faltaría llamar a esta pantalla cada vez que el jugador logre avanzar un nivel en el método main, para lograr esto agregamos lo siguiente:
+
+```python
+    while game_state.running:
+        # Resto del codigo
+        if game_state.level_completed:
+            win_screen = WinScreen(screen)
+            running = True
+            while running:
+                for event in pygame.event.get():
+                    action = win_screen.handle_event(event)
+                    if action == 'quit':
+                        pygame.quit()
+                        return
+                    if action == 'play':
+                        break
+                    if action == 'next_level':
+                        running = False
+                        falling_objects.empty()
+                        break
+                win_screen.draw()
+                pygame.display.flip()
+        clock.tick(60)
+        # Resto del codigo
+```
+
+Explicación:
+
+En el ciclo de juego principal, añadimos un condicional para comprobar si el jugador ha completado un nivel con `game_state.level_completed`. Si es así, se crea la pantalla de victoria y se inicia un nuevo bucle while. En este bucle, se manejan los eventos de pulsar el botón de salir y el botón de pasar al siguiente nivel. Si se pulsa este último, se vacía el grupo de objetos que caen y se sale del bucle. Por último, se dibuja la pantalla de victoria y se actualiza la pantalla del juego.
+
+![Untitled](Finals%20Frenzy%20Christmas%20Edition%20ddb529c67b5c46d0b6630f1bf225600e/Untitled%205.png)
+
+Ahora cuando el usuario completo exitosamente todos los niveles vamos a mostrar solo un mensaje de que franklin logro pasar el semestre exitosamente, para ello hacemos la clase `Win` :
+
+```python
+class Win:
+    def __init__(self, screen):
+        self.screen = screen
+        self.win_font = pygame.font.SysFont(None, 37)
+
+    def draw(self):
+        self.screen.fill((174, 214, 241))
+
+        win_text = self.win_font.render("¡Franklin Logro pasar el semestre!", True, (0, 0, 0))
+        self.screen.blit(win_text, (200, 250))
+
+    def handle_event(self, event):
+        if event.type == pygame.QUIT:
+            return 'quit'
+```
+
+Explicación:
+
+La clase `Win` se encarga de crear y manejar la pantalla final que se muestra cuando el jugador ha pasado todos los niveles. En el método `__init__`, se establecen la pantalla y la fuente del texto. En el método `draw`, se dibuja en la pantalla el texto de victoria. En el método `handle_event`, se maneja el evento de salida del juego.
+
+En nuestro bucle principal del juego agregamos estas lineas:
+
+```python
+# Resto del codigo
+if not game_state.running:
+    win = Win(screen)
+    running = True
+    while running:
+        for event in pygame.event.get():
+            action = win.handle_event(event)
+            if action == 'quit':
+                pygame.quit()
+                return
+        win.draw()
+        pygame.display.flip()
+ # Resto del codigo
+```
+
+Explicación:
+
+En el bucle de juego principal, añadimos un condicional para comprobar si el juego ha terminado con `not game_state.running`. Si es así, se crea la pantalla de victoria final y se inicia un nuevo bucle while. En este bucle, se manejan los eventos de pulsar la tecla de salida. Por último, se dibuja la pantalla de victoria final y se actualiza la pantalla del juego.
+
+![Untitled](Finals%20Frenzy%20Christmas%20Edition%20ddb529c67b5c46d0b6630f1bf225600e/Untitled%206.png)
+
+Ahora vamos a implementar la pantalla de GameOver para ello creamos la clase:
+
+```python
+class GameOver:
+    def __init__(self, screen):
+        self.screen = screen
+        self.game_over_font = pygame.font.SysFont(None, 50)
+        self.button_font = pygame.font.SysFont(None, 30)
+        self.retry_button = pygame.Rect(350, 350, 130, 50)
+
+    def draw(self):
+        self.screen.fill((174, 214, 241))
+
+        game_over_text = self.game_over_font.render("¡Perdiste!", True, (0, 0, 0))
+        self.screen.blit(game_over_text, (350, 250))
+
+        pygame.draw.rect(self.screen, (255,0,0), self.retry_button)
+        retry_text = self.button_font.render("Reintentar", True, (0, 0, 0))
+        self.screen.blit(retry_text, (self.retry_button.x + 10, self.retry_button.y + 10))
+
+    def handle_event(self, event):
+        if event.type == pygame.QUIT:
+            return 'quit'
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if self.retry_button.collidepoint(event.pos):
+                return 'retry'
+```
+
+Luego en nuestro bucle principal agregamos la condicional:
+
+```python
+if not game_state.running and not game_state.win:
+    game_over = GameOver(screen)
+    running = True
+    while running:
+        for event in pygame.event.get():
+            action = game_over.handle_event(event)
+            if action == 'quit':
+                pygame.quit()
+                return
+            if action == 'retry':
+                running = False
+                game_state = GameState()
+                falling_objects.empty()
+                player = Player(400, 500)
+                break
+        game_over.draw()
+        pygame.display.flip()
+```
+
+Explicación:
+
+En el método `__init__`, se establecen la pantalla, las fuentes de los textos y el rectángulo del botón de reintentar. En el método `draw`, se dibuja en la pantalla el texto de Game Over y el botón de reintentar. En el método `handle_event`, se manejan los eventos de pulsar el botón de reintentar y la tecla de salida.
+
+En el bucle de juego principal, añadimos un condicional para comprobar si el juego ha terminado y si el jugador no ha ganado con `not game_state.running and not game_state.win`. Si es asi, se crea la pantalla de Game Over y se inicia un nuevo bucle while. En este bucle, se manejan los eventos de pulsar el botón de reintentar y la tecla de salida. Si se pulsa el botón de reintentar, se reinicia el estado del juego, se vacía el grupo de objetos que caen, se recrea el jugador y se sale del bucle. Por último, se dibuja la pantalla de Game Over y se actualiza la pantalla del juego.
+
+![Untitled](Finals%20Frenzy%20Christmas%20Edition%20ddb529c67b5c46d0b6630f1bf225600e/Untitled%207.png)

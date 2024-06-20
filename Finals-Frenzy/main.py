@@ -6,7 +6,7 @@ from GameState import GameState
 from Player import Player
 from Draw import Draw
 from Menu import Menu
-
+from Screen import *
 
 def main():
     pygame.init()
@@ -49,6 +49,52 @@ def main():
             falling_objects.add(falling_object)
 
         dg.draw_game(screen, player, falling_objects, game_state)
+
+        if game_state.level_completed:
+            win_screen = WinScreen(screen)
+            running = True
+            while running:
+                for event in pygame.event.get():
+                    action = win_screen.handle_event(event)
+                    if action == 'quit':
+                        pygame.quit()
+                        return
+                    if action == 'next_level':
+                        running = False
+                        falling_objects.empty()
+                        break
+                win_screen.draw()
+                pygame.display.flip()
+
+        if game_state.win:
+            win = Win(screen)
+            running = True
+            while running:
+                for event in pygame.event.get():
+                    action = win.handle_event(event)
+                    if action == 'quit':
+                        pygame.quit()
+                        return
+                win.draw()
+                pygame.display.flip()
+
+        if not game_state.running and not game_state.win:
+            game_over = GameOver(screen)
+            running = True
+            while running:
+                for event in pygame.event.get():
+                    action = game_over.handle_event(event)
+                    if action == 'quit':
+                        pygame.quit()
+                        return
+                    if action == 'retry':
+                        running = False
+                        game_state = GameState()
+                        falling_objects.empty()
+                        player = Player(400, 500)
+                        break
+                game_over.draw()
+                pygame.display.flip()
 
         clock.tick(60)
 
