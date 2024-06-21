@@ -10,6 +10,7 @@ from Screen import *
 
 def main():
     pygame.init()
+    pygame.mixer.init()
     screen = pygame.display.set_mode((800, 600))
     clock = pygame.time.Clock()
 
@@ -29,6 +30,7 @@ def main():
             if action == 'play':
                 running = False
                 break
+        menu.update() # actualiza la imagen que se muestra
         menu.draw()
         pygame.display.flip()
         clock.tick(60)
